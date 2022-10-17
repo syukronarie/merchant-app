@@ -1,7 +1,7 @@
 import "./App.css";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import CONST from "./utils/constants";
-// import SetupRouters from "./routes/SetupRoutes";
+import SetupRouters from "./routes/SetupRoutes";
 
 const client = new ApolloClient({
 	uri: CONST.BASE_URL_GRAPHQL,
@@ -10,7 +10,9 @@ const client = new ApolloClient({
 
 function App() {
 	return (
-		<ApolloProvider client={client}>{/* <SetupRouters /> */}</ApolloProvider>
+		<ApolloProvider client={client}>
+			<SetupRouters />
+		</ApolloProvider>
 	);
 }
 

@@ -1,12 +1,7 @@
-import "./App.css";
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
-import CONST from "./utils/constants";
+import { ApolloProvider } from "@apollo/client";
 import SetupRouters from "./routes/SetupRoutes";
-
-const client = new ApolloClient({
-	uri: CONST.BASE_URL_GRAPHQL,
-	cache: new InMemoryCache(),
-});
+import client from "./config/graphqlConfig";
+import "./App.css";
 
 function App() {
 	return (

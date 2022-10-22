@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { useQuery } from "@apollo/client";
-import { AllMerchant } from "../config/typeDefs";
+import { AllMerchant, GetMerchant } from "../config/graphqlTypeDefs/merchants";
 
 const FILTER_OPTIONS = {
 	page: 1,
@@ -14,24 +14,42 @@ const convertUTCDateToLocalDate = (UTCDate) => {
 };
 
 const Merchant = () => {
-	const [filterOptions, setFilterOptions] = useState(FILTER_OPTIONS);
-	const { data, loading } = useQuery(AllMerchant, {
+	const { data, loading, refetch } = useQuery(AllMerchant, {
 		variables: {
 			allMerchantfilterOptions: {
-				...filterOptions,
+				...FILTER_OPTIONS,
 			},
 		},
 	});
 
-	const handleFilterOptions = () => {
-		setFilterOptions((state) => ({ ...state, page: state.page + 1 }));
+	const { data: merchantById } = useQuery(GetMerchant, {
+		variables: {
+			getMerchantId: 12,
+		},
+	});
+
+	// const [allMechant, { data, loading, refetch }] = useLazyQuery(AllMerchant, {
+	// 	variables: {
+	// 		allMerchantfilterOptions: {
+	// 			...FILTER_OPTIONS,
+	// 		},
+	// 	},
+	// });
+
+	const handleFilterOptions = (currPage, isNext) => {
+		refetch({
+			allMerchantfilterOptions: {
+				limit: 5,
+				page: isNext ? currPage + 1 : currPage - 1,
+			},
+		});
 	};
+
+	if (loading) return <p>loading...</p>;
 
 	return (
 		<div>
-			{loading ? (
-				<p>loading...</p>
-			) : (
+			{!!data && (
 				<div>
 					{data.allMerchant.merchants.map((val) => (
 						<div key={val.id}>
@@ -48,10 +66,24 @@ const Merchant = () => {
 						<p>Last Page: {data.allMerchant.lastPage}</p>
 						<p>Total Merchant: {data.allMerchant.total}</p>
 					</div>
+					<button
+						onClick={() => {
+							handleFilterOptions(data.allMerchant.currentPage, true);
+						}}
+					>
+						Next Page
+					</button>
+					<button
+						onClick={() => {
+							handleFilterOptions(data.allMerchant.currentPage, false);
+						}}
+					>
+						Back Page
+					</button>
 				</div>
 			)}
-
-			<button onClick={handleFilterOptions}>Next Page</button>
+			{JSON.stringify({ merchantById })}
+			{/* <button onClick={() => allMechant()}>Fetch All Merchant</button> */}
 		</div>
 	);
 };
